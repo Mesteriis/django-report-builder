@@ -92,10 +92,10 @@ def ajax_add_star(request, pk):
     user = request.user
     if user in report.starred.all():
         added = False
-        report.starred.remove(request.user)
+        report.starred.remove(user)
     else:
         added = True
-        report.starred.add(request.user)
+        report.starred.add(user)
     return HttpResponse(added)
 
 

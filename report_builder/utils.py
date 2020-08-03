@@ -182,8 +182,7 @@ def get_custom_fields_from_model(model_class):
                 app_label=model_class._meta.app_label)
         except ContentType.DoesNotExist:
             content_type = None
-        custom_fields = CustomField.objects.filter(content_type=content_type)
-        return custom_fields
+        return CustomField.objects.filter(content_type=content_type)
 
 
 def get_model_from_path_string(root_model, path):
@@ -198,19 +197,20 @@ def get_model_from_path_string(root_model, path):
                 direct = field.concrete
             except FieldDoesNotExist:
                 return root_model
-            if direct:
-                if hasattr(field, 'related'):
-                    try:
-                        root_model = field.related.parent_model()
-                    except AttributeError:
-                        root_model = field.related.model
+            if direct and hasattr(field, 'related'):
+                try:
+                    root_model = field.related.parent_model()
+                except AttributeError:
+                    root_model = field.related.model
 
-                elif hasattr(field, 'related_model') and field.related_model:
-                    root_model = field.related_model
+            elif (
+                hasattr(field, 'related_model')
+                and field.related_model
+                or not direct
+                and hasattr(field, 'related_model')
+            ):
+                root_model = field.related_model
 
-            else:
-                if hasattr(field, 'related_model'):
-                    root_model = field.related_model
-                else:
-                    root_model = field.model
+            elif not direct:
+                root_model = field.model
     return root_model

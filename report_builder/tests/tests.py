@@ -465,7 +465,7 @@ class ReportTests(TestCase):
                 place=place, serves_hot_dogs=row[2], serves_pizza=row[3]
             )
 
-            for count in range(row[4]):
+            for _ in range(row[4]):
                 days = None if not (total % 3 | total % 2) else total % 3
 
                 Waiter.objects.create(
