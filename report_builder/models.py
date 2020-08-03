@@ -215,6 +215,7 @@ class Report(models.Model):
 
         group = [df.path + df.field for df in display_fields if df.group]
 
+        data_list = []
         # To support group-by with multiple fields, we turn all the other
         # fields into aggregations. The default aggregation is `Max`.
         if group:
@@ -223,7 +224,6 @@ class Report(models.Model):
                     field.aggregate = 'Max'
             values = queryset.values(*group)
             values = self.add_aggregates(values, display_fields)
-            data_list = []
             for row in values:
                 row_data = []
                 for field in display_field_paths:
@@ -239,7 +239,6 @@ class Report(models.Model):
         else:
             values_list = list(queryset.values_list(*display_field_paths))
 
-            data_list = []
             values_index = 0
             for obj in queryset:
                 display_property_values = []
@@ -261,7 +260,7 @@ class Report(models.Model):
                         if property_filter.filter_property(val):
                             add_row = False
 
-                    if add_row is True:
+                    if add_row:
                         for total in display_totals:
                             increment_total(total, data_row)
                         # Replace choice data with display choice string
@@ -649,7 +648,7 @@ class FilterField(AbstractField):
         if self.field_type == 'DateField':
             date_value = date_value.date()
             date_form = forms.DateField()
-        if self.field_type == 'TimeField':
+        elif self.field_type == 'TimeField':
             date_value = date_value.time()
             date_form = forms.TimeField()
 

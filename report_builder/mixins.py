@@ -48,11 +48,11 @@ def generate_filename(title, ends_with):
 
 class DataExportMixin(object):
     def build_sheet(self, data, ws, sheet_name='report', header=None, widths=None):
-        first_row = 1
-        column_base = 1
-
         ws.title = re.sub(r'\W+', '', sheet_name)[:30]
         if header:
+            first_row = 1
+            column_base = 1
+
             for i, header_cell in enumerate(header):
                 cell = ws.cell(row=first_row, column=i + column_base)
                 cell.value = header_cell
